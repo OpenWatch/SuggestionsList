@@ -65,7 +65,10 @@
         rightText = [NSMutableString stringWithString:string];
     }
     
-    [self matchString:rightText];
+    NSArray *components = [rightText componentsSeparatedByString:@","];
+    NSString *lastComponent = [components lastObject];
+    
+    [self matchString:lastComponent];
     [self showPopOverListFor:textField];
     self.activeTextField = textField;
 }
@@ -97,7 +100,20 @@
 }
 #pragma mark - Table view delegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [self.activeTextField setText:[self.matchedStrings objectAtIndex:indexPath.row]];
+    NSMutableString *text = [NSMutableString string];
+    NSArray *components = [self.activeTextField.text componentsSeparatedByString:@","];
+    NSString *matchedString = [self.matchedStrings objectAtIndex:indexPath.row];
+    for (int i = 0; i < components.count; i++) {
+        NSString *component = [components objectAtIndex:i];
+        NSString *stringToAppend = @"";
+        if (i == components.count-1) {
+            stringToAppend = matchedString;
+        } else {
+            stringToAppend = component;
+        }
+        [text appendFormat:@"%@,", stringToAppend];
+    }
+    [self.activeTextField setText:text];
     [self.popOver dismissPopoverAnimated:YES];
 }
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
