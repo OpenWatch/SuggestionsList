@@ -7,15 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "WEPopoverController.h"
 
 @interface SuggestionsList : UITableViewController 
 
--(id)initWithArray:(NSArray*)array;
+-(id)initWithSuggestionStrings:(NSArray*)array;
 -(void)showSuggestionsFor:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
 
-@property(retain)NSArray *stringsArray;
-@property(retain)NSArray *matchedStrings;
-@property(retain)UIPopoverController *popOver;
-
-@property(assign)UITextField *activeTextField;
+@property (nonatomic, strong) NSArray *suggestionStrings;
+@property (nonatomic, strong) NSArray *matchedStrings;
+@property (nonatomic, strong) WEPopoverController *popOver;
+@property (nonatomic, weak) UITextField *activeTextField;
 @end
