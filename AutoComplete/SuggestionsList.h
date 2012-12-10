@@ -11,7 +11,6 @@
 
 @interface SuggestionsList : UITableViewController 
 
--(id)initWithSuggestionStrings:(NSArray*)array;
 -(void)showSuggestionsFor:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string;
 
 @property (nonatomic, strong) NSArray *suggestionStrings;

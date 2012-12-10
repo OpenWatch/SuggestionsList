@@ -18,12 +18,11 @@
 @synthesize popOver = _popOver;
 @synthesize activeTextField = _activeTextField;
 
--(id)initWithSuggestionStrings:(NSArray*)array
+-(id)init
 {
     self = [super init];
     if (self) {
         
-        self.suggestionStrings = array;
         self.matchedStrings = [NSArray array];
         
         //Initializing PopOver
@@ -38,7 +37,7 @@
     self.matchedStrings = nil;
     
     if (suggestionStrings == nil) {
-        @throw [NSException exceptionWithName:@"Please set an array to stringsArray" reason:@"No array specified" userInfo:nil];
+        return;
     }
     
     self.matchedStrings = [suggestionStrings filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"self beginswith[cd] %@",letters]];
