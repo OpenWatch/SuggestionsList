@@ -1,22 +1,27 @@
 //
-//  SuggestionMenu.m
+//  OWAutocompletionView.m
 //  AutoComplete
 //
+//  Modified by Chris Ballinger on 12/11/2011
+//
+//  Based on SuggestionsList.m
 //  Created by Wojciech Mandrysz on 19/09/2011.
 //  Copyright 2011 http://tetek.me . All rights reserved.
 //
 
-#import "SuggestionsList.h"
+#import "OWAutocompletionView.h"
 
-#define POPOVER_WIDTH 250
-#define POPOVER_HEIGHT 260
+#define DEFAULT_POPOVER_WIDTH 250
+#define DEFAULT_POPOVER_HEIGHT 120
 
-@implementation SuggestionsList
+@implementation OWAutocompletionView
 
 @synthesize suggestionStrings;
 @synthesize  matchedStrings = _matchedStrings;
 @synthesize popOver = _popOver;
 @synthesize activeTextField = _activeTextField;
+@synthesize delegate;
+@synthesize popoverSize;
 
 -(id)init
 {
@@ -28,7 +33,7 @@
         //Initializing PopOver
         self.popOver = [[WEPopoverController alloc] initWithContentViewController:self];
         self.popOver.containerViewProperties = [self improvedContainerViewProperties];
-        self.popOver.popoverContentSize = CGSizeMake(POPOVER_WIDTH, POPOVER_HEIGHT);
+        self.popoverSize = CGSizeMake(DEFAULT_POPOVER_WIDTH, DEFAULT_POPOVER_HEIGHT);
     }
     return self;
 }
@@ -45,6 +50,7 @@
 }
 -(void)showPopOverListFor:(UITextField*)textField{
     UIPopoverArrowDirection arrowDirection = UIPopoverArrowDirectionUp;
+    self.popOver.popoverContentSize = popoverSize;
     if ([self.matchedStrings count] == 0) {
         [_popOver dismissPopoverAnimated:YES];
     }
@@ -53,7 +59,7 @@
         
     }
 }
--(void)showSuggestionsFor:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
+-(void)showSuggestionsForTextField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
     NSMutableString *rightText;
     
     if (textField.text) {
@@ -65,6 +71,13 @@
     }
     
     [self matchString:rightText];
+    [self showPopOverListFor:textField];
+    self.activeTextField = textField;
+}
+
+- (void) showAllSuggestionsForTextField:(UITextField *)textField {
+    self.matchedStrings = suggestionStrings;
+    [self.tableView reloadData];
     [self showPopOverListFor:textField];
     self.activeTextField = textField;
 }
@@ -97,7 +110,11 @@
 #pragma mark - Table view delegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *matchedString = [self.matchedStrings objectAtIndex:indexPath.row];
-    [self.activeTextField setText:matchedString];
+    if ([delegate respondsToSelector:@selector(didSelectString:forTextField:)]) {
+        [delegate didSelectString:matchedString forTextField:self.activeTextField];
+    } else {
+        [self.activeTextField setText:matchedString];
+    }
     [self.popOver dismissPopoverAnimated:YES];
 }
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
