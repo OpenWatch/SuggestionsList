@@ -1,5 +1,5 @@
 //
-//  OWAutocompletionView.m
+//  OWAutocompletionViewController.m
 //  AutoComplete
 //
 //  Modified by Chris Ballinger on 12/11/2011
@@ -9,12 +9,12 @@
 //  Copyright 2011 http://tetek.me . All rights reserved.
 //
 
-#import "OWAutocompletionView.h"
+#import "OWAutocompletionViewController.h"
 
 #define DEFAULT_POPOVER_WIDTH 250
 #define DEFAULT_POPOVER_HEIGHT 120
 
-@implementation OWAutocompletionView
+@implementation OWAutocompletionViewController
 
 @synthesize suggestionStrings;
 @synthesize  matchedStrings = _matchedStrings;
@@ -22,6 +22,7 @@
 @synthesize activeTextField = _activeTextField;
 @synthesize delegate;
 @synthesize popoverSize;
+@synthesize viewForAutocompletionPopover;
 
 -(id)init
 {
@@ -48,6 +49,7 @@
     self.matchedStrings = [suggestionStrings filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"self beginswith[cd] %@",letters]];
     [self.tableView reloadData];
 }
+
 -(void)showPopOverListFor:(UITextField*)textField{
     UIPopoverArrowDirection arrowDirection = UIPopoverArrowDirectionUp;
     self.popOver.popoverContentSize = popoverSize;
@@ -55,7 +57,11 @@
         [_popOver dismissPopoverAnimated:YES];
     }
     else if(!_popOver.isPopoverVisible){
-        [_popOver presentPopoverFromRect:textField.frame inView:textField.superview permittedArrowDirections:arrowDirection animated:YES];
+        UIView *presentationView = textField.superview;
+        if (viewForAutocompletionPopover) {
+            presentationView = viewForAutocompletionPopover;
+        }
+        [_popOver presentPopoverFromRect:textField.frame inView:presentationView permittedArrowDirections:arrowDirection animated:YES];
         
     }
 }
